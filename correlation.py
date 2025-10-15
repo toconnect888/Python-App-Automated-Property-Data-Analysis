@@ -86,3 +86,43 @@ randomfloat = random.rand(3, 5)   #(3,5) table with any float number from 0-1
 
 print(randomnumber)
 print(randomfloat)
+
+x = random.choice([3, 5, 7, 9], size=(3, 5))
+print(x)
+x = random.choice([3, 5, 7, 9], p=[0.1, 0.3, 0.6, 0.0], size=(100))
+random.shuffle(x)
+
+print(random.permutation(arr))
+sns.displot([0, 1, 2, 3, 4, 5], kind="kde")
+plt.show()
+
+sns.displot(random.normal(size=1000), kind="kde")
+plt.show()
+
+
+def myadd(x, y):
+  return x+y
+myadd = np.frompyfunc(myadd, 2, 1)
+print(myadd([1, 2, 3, 4], [5, 6, 7, 8]))
+
+arr1 = np.trunc([-3.1666, 13.6667])  # Round number
+arr2 = np.fix([-8.1666, 13.6667])  #round number
+arrsum = np.sum([arr1, arr2])         #add all values to one total number
+addrow = np.sum([arr1, arr2], axis=1)  # add value of each row
+addcol = np.sum([arr1,arr2], axis = 0)  #add value of each colomn
+print(addcol)
+print(np.cumsum(arr1))   #add cumulative sum
+
+arr = np.arange(1, 10)  
+print(np.log2(arr)) # calculate log 2 of each value in the array
+print(np.prod(arr))  # multiple every value in the array
+print(np.prod(arr, axis=0)) # multiply down each column 
+print(np.diff(arr)) # subtracting two successive elements.
+print(np.diff(arr, n=2))  # discrete difference of the array twice
+print(np.lcm.reduce([3,6,9]))  # the first number values can fit into without leaving a remainder. = 18
+print(np.gcd.reduce([3,6,9]))  #largest number that fits into all numbers evenly  = 3
+print(np.unique(np.array([1, 1, 1, 2, 3, 4, 5, 5, 6, 7])))  #find unique number in the array
+print(np.union1d(arr1, arr2))  #find unique value of arr1 and arr2
+print(np.intersect1d(arr1, arr2, assume_unique=True)) #find same value in arr1 and arr2
+print(np.setdiff1d(arr1, arr2, assume_unique=True))
+print(np.setxor1d(arr1, arr2, assume_unique=True))  # find values that are NOT present in arr1 and arr2
