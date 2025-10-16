@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from numpy import random
 
+from numpy import random
+import seaborn as sns
+
 data = pd.read_csv('correlation.csv')
 
 for x in data.index: # cap the duration to 120, "Duration" column. If value higher than 120, set it to 120:
@@ -14,27 +17,24 @@ data = data.dropna() #remove rows with null values
 print(data)
 print(data.corr())
 
-data.plot() #linre graph
+data.plot() #create line graph
 plt.show()
 
-data.plot(kind='scatter', x='Duration', y='Calories') #scatter graph
+data.plot(kind='scatter', x='Duration', y='Calories') #create scatter graph
 plt.show()
 
-data["Duration"].plot(kind = 'hist') #histogram
+data["Duration"].plot(kind = 'hist') # create histogram graph
 plt.show()
 
 
 arr = np.array([[1, 2, 3, 4, 5], [7 ,8 ,9 ,10 ,11]])
+
+# print(arr) #number of dimensions
+# print(arr[0] + arr[1])
 # print(arr)
-
-
-print(arr) #number of dimensions
-print(arr[0] + arr[1])
-print(arr)
-print('number of dimensions :', arr.ndim)
-print('2nd element on 1st row: ', arr[0, 1]) 
-print('Last element from 1st row: ', arr[0, -1])
-
+# print('number of dimensions :', arr.ndim)
+# print('2nd element on 1st row: ', arr[0, 1]) 
+# print('Last element from 1st row: ', arr[0, -1])
 
 # print(arr[1, 1:4])
 # print(arr[0:2, 1:4]) #slice index 1 to index 4 (not included),
@@ -118,16 +118,12 @@ print(np.cumsum(arr1))   #add cumulative sum
 
 arr = np.arange(1, 10)  
 print(np.log2(arr)) # calculate log 2 of each value in the array
-
 print(np.prod(arr))  # multiple every value in the array
 print(np.prod(arr, axis=0)) # multiply down each column 
-
 print(np.diff(arr)) # subtracting two successive elements.
 print(np.diff(arr, n=2))  # discrete difference of the array twice
-
 print(np.lcm.reduce([3,6,9]))  # the first number values can fit into without leaving a remainder. = 18
 print(np.gcd.reduce([3,6,9]))  #largest number that fits into all numbers evenly  = 3
-
 print(np.unique(np.array([1, 1, 1, 2, 3, 4, 5, 5, 6, 7])))  #find unique number in the array
 print(np.union1d(arr1, arr2))  #find unique value of arr1 and arr2
 print(np.intersect1d(arr1, arr2, assume_unique=True)) #find same value in arr1 and arr2
