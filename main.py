@@ -61,6 +61,7 @@ def get_dynamic_tokens():
             driver.execute_script("arguments[0].click();", login_button)
             #print("Login button clicked via JavaScript.")
 
+
             # Check for alerts (like password save prompts) immediately after click
             try:
                 WebDriverWait(driver, 2).until(EC.alert_is_present())
@@ -83,7 +84,6 @@ def get_dynamic_tokens():
         except Exception as e:
             print(f"DEBUG: An unexpected exception occurred during login button click or immediate aftermath: {type(e).__name__}: {e}")
             raise
-
 
         # --- 5. Wait for Post-Login Page Load / Navigate to Commercial Listings ---
         # Locate and click the "Commercial listings" button
@@ -143,7 +143,6 @@ def get_user_search_parameters():
     print("3: General Search") # This will now use default Office, Ontario, GTA
 
     search_method_choice = input("Enter the number of your choice: ")
-
 
     if search_method_choice == '1':
         # Search by Building Name/Address
@@ -349,8 +348,6 @@ def create_excel_report(buildings):
     # Format for percentage values
     percentage_format = workbook.add_format({'num_format': '0.00%', 'align': 'left'})
     
-
-
     # Column headers for each building table - Updated to 19 fields
     headers = [
         "Building Name",
@@ -467,12 +464,10 @@ def create_excel_report(buildings):
                 except ValueError:
                     pass 
 
-
             # Calculate Direct Available Rate
             direct_available_rate_to_write = 'N/A'
             if direct_available_area_value is not None and total_building_area_value is not None and total_building_area_value != 0:
                  direct_available_rate_to_write = (direct_available_area_value / total_building_area_value)
-
 
             # Calculate Total Available Rate
             total_available_rate_to_write = 'N/A'
@@ -484,7 +479,6 @@ def create_excel_report(buildings):
             direct_asking_rate_to_write = 'N/A'
             total_additional_rent_to_write = 'N/A'
             gross_rent_to_write = 'N/A'
-
             asking_rate_value = None
             additional_rent_value = None
 
@@ -586,7 +580,6 @@ def create_excel_report(buildings):
 
             start_row = current_row + 2
 
-
             worksheet.set_column(0,0,25)
             worksheet.set_column(1,1,25)
 
@@ -596,9 +589,10 @@ def create_excel_report(buildings):
             # To prevent infinite loop if an error occurs but start_row is not updated
             start_row += len(headers) + 4 
 
-
         if building_index >= 29: # Limit to 30 buildings
             break
+        # if building_index >= 29: # Limit to 30 buildings
+        #     break
 
 
     workbook.close()
@@ -607,7 +601,7 @@ def create_excel_report(buildings):
 # Main program execution
 if __name__ == "__main__":
     auth_tokens = get_dynamic_tokens() # Get tokens dynamically
-
+    print("Authentication tokens:", auth_tokens)  # Debug print to verify token
     if auth_tokens:
         search_params = get_user_search_parameters()
         if search_params:
@@ -623,3 +617,4 @@ if __name__ == "__main__":
             print("Search parameters not provided.")
     else:
         print("Authentication failed. Cannot proceed with data fetching.")
+

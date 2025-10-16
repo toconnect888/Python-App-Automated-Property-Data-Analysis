@@ -1,5 +1,5 @@
-# python scraping data
-# Altus Real Estate Listings Scraper
+
+# Real Estate Listings Scraper
 
 This Python application automates the login process to Altus Data Studio, allows you to specify search criteria, and generates an Excel report of real estate listings. Features include:
 
@@ -60,7 +60,6 @@ After Cloning the Repository:
 1.  **Install Dependencies:**
     pip install -r requirements.txt
     
-
 2.  **Download ChromeDriver:**
     * Download the `chromedriver.exe` (or `chromedriver` for macOS/Linux) that matches your installed Google Chrome browser version from the official [ChromeDriver Downloads page](https://googlechromelabs.github.io/chrome-for-testing/).
     * Place this `chromedriver.exe` file in the root directory of this project (next to `main.py`).
@@ -69,6 +68,7 @@ After Cloning the Repository:
 1.  From the project root directory, run:
     python main.py
     
+
 2.  The script will prompt you for your Altus Data Studio username and password, and then guide you through the search options.
 
 ### Building the Executable (for Developers)
@@ -82,5 +82,4 @@ If you make changes to `main.py` and want to build a new executable:
     python -m PyInstaller --onefile --name AltusReportGenerator --add-data "chromedriver.exe;." .\main.py --clean
     ```
     The executable will be found in the `dist/` folder that is created after the above command is successfully run.
-
 ---
