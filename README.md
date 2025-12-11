@@ -34,7 +34,7 @@ This Python application automates the login process to Altus Data Studio, allows
     * The Altus Data Studio website's login process or API might have changed. If this is a persistent issue, the script may need an update.
 
 ## For Developers (Running from Source)
-If you want to modify the script, contribute to the project, or run it directly from its Python source code, follow these steps.
+If you want to modify the script, contribute to the project, or run it directly from its Python source code, follow these steps. 
 
 ### Requirements
 * Python 3.9+ (recommended)

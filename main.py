@@ -2,6 +2,7 @@ import requests
 import json
 import os
 import sys
+import json
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -11,6 +12,16 @@ import time
 from urllib.parse import unquote 
 from selenium.common.exceptions import TimeoutException, WebDriverException 
 import xlsxwriter
+import pandas as pd
+# For PDF generation
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import LETTER
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import letter, landscape
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib import colors
+
 
 API_URL = "https://www.altusdatastudio.com/api/v1/search-result/comm_listings/data"
 
@@ -37,7 +48,7 @@ def get_dynamic_tokens():
 
     driver = None 
     try:
-        print("See meeeee")
+        #print("running")
         driver = webdriver.Chrome(service=service, options=options)
         driver.set_page_load_timeout(30)
 
@@ -587,14 +598,15 @@ def create_excel_report(buildings):
             print(f"Error processing building: {building_name_to_write}. Error: {e}")
             # To prevent infinite loop if an error occurs but start_row is not updated
             start_row += len(headers) + 4 
-
-
         # if building_index >= 29: # Limit to 30 buildings
         #     break
 
-
     workbook.close()
     print("Real estate report generated successfully: real_estate_report.xlsx")
+
+
+
+
 
 # Main program execution
 if __name__ == "__main__":
@@ -609,6 +621,8 @@ if __name__ == "__main__":
             if buildings_data:
                 print("Creating Excel report...")
                 create_excel_report(buildings_data)
+               # export_json_variable_to_pdf(buildings=buildings_data,pdf_path=r"E:\Business\TOCOnnect\Code\Python Practice\building_report.pdf")
+           
             else:
                 print("Failed to fetch data or no data found.")
         else:
@@ -618,4 +632,4 @@ if __name__ == "__main__":
 
 
 
-
+# ---- Run the function ----
