@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_0a6fbc2f89641027a9bf46128da0b076 {
+                    position: relative;
+                    width: 4266.0px;
+                    height: 2970.0px;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+    <div id="map-legend" class="custom-legend"  style="
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        width: 280px;
+        max-height: 240px;
+        overflow-y: auto;
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 10px;
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        z-index: 9999;
+    ">
+        <div style="font-weight:bold; margin-bottom:6px;">
+            Locations
+        </div>
+        
+            <div style="margin-bottom:4px;">
+                <span style="
+                    display:inline-block;
+                    width:18px;
+                    height:18px;
+                    line-height:18px;
+                    text-align:center;
+                    border-radius:50%;
+                    background:#ff4c00;
+                    color:white;
+                    font-size:11px;
+                    font-weight:bold;
+                    margin-right:6px;">
+                    1
+                </span>
+                <span style="font-size:12px;">5925 Airport Rd,Mississauga, Ontario, Canada</span>
+            </div>
+        
+            <div style="margin-bottom:4px;">
+                <span style="
+                    display:inline-block;
+                    width:18px;
+                    height:18px;
+                    line-height:18px;
+                    text-align:center;
+                    border-radius:50%;
+                    background:#ff4c00;
+                    color:white;
+                    font-size:11px;
+                    font-weight:bold;
+                    margin-right:6px;">
+                    2
+                </span>
+                <span style="font-size:12px;">5935 Airport Rd,Mississauga, Ontario, Canada</span>
+            </div>
+        
+            <div style="margin-bottom:4px;">
+                <span style="
+                    display:inline-block;
+                    width:18px;
+                    height:18px;
+                    line-height:18px;
+                    text-align:center;
+                    border-radius:50%;
+                    background:#ff4c00;
+                    color:white;
+                    font-size:11px;
+                    font-weight:bold;
+                    margin-right:6px;">
+                    3
+                </span>
+                <span style="font-size:12px;">6303 Airport Rd,Mississauga, Ontario, Canada</span>
+            </div>
+        
+            <div style="margin-bottom:4px;">
+                <span style="
+                    display:inline-block;
+                    width:18px;
+                    height:18px;
+                    line-height:18px;
+                    text-align:center;
+                    border-radius:50%;
+                    background:#ff4c00;
+                    color:white;
+                    font-size:11px;
+                    font-weight:bold;
+                    margin-right:6px;">
+                    4
+                </span>
+                <span style="font-size:12px;">10 Carlson Crt,Toronto, Ontario, Canada</span>
+            </div>
+        
+            <div style="margin-bottom:4px;">
+                <span style="
+                    display:inline-block;
+                    width:18px;
+                    height:18px;
+                    line-height:18px;
+                    text-align:center;
+                    border-radius:50%;
+                    background:#ff4c00;
+                    color:white;
+                    font-size:11px;
+                    font-weight:bold;
+                    margin-right:6px;">
+                    5
+                </span>
+                <span style="font-size:12px;">5090 Commerce Blvd,Mississauga, Ontario, Canada</span>
+            </div>
+        
+            <div style="margin-bottom:4px;">
+                <span style="
+                    display:inline-block;
+                    width:18px;
+                    height:18px;
+                    line-height:18px;
+                    text-align:center;
+                    border-radius:50%;
+                    background:#ff4c00;
+                    color:white;
+                    font-size:11px;
+                    font-weight:bold;
+                    margin-right:6px;">
+                    6
+                </span>
+                <span style="font-size:12px;">5110 Creekbank Rd,Mississauga, Ontario, Canada</span>
+            </div>
+        
+            <div style="margin-bottom:4px;">
+                <span style="
+                    display:inline-block;
+                    width:18px;
+                    height:18px;
+                    line-height:18px;
+                    text-align:center;
+                    border-radius:50%;
+                    background:#ff4c00;
+                    color:white;
+                    font-size:11px;
+                    font-weight:bold;
+                    margin-right:6px;">
+                    7
+                </span>
+                <span style="font-size:12px;">5090 Explorer Dr,Mississauga, Ontario, Canada</span>
+            </div>
+        
+            <div style="margin-bottom:4px;">
+                <span style="
+                    display:inline-block;
+                    width:18px;
+                    height:18px;
+                    line-height:18px;
+                    text-align:center;
+                    border-radius:50%;
+                    background:#ff4c00;
+                    color:white;
+                    font-size:11px;
+                    font-weight:bold;
+                    margin-right:6px;">
+                    8
+                </span>
+                <span style="font-size:12px;">5520 Explorer Dr,Mississauga, Ontario, Canada</span>
+            </div>
+        
+            <div style="margin-bottom:4px;">
+                <span style="
+                    display:inline-block;
+                    width:18px;
+                    height:18px;
+                    line-height:18px;
+                    text-align:center;
+                    border-radius:50%;
+                    background:#ff4c00;
+                    color:white;
+                    font-size:11px;
+                    font-weight:bold;
+                    margin-right:6px;">
+                    9
+                </span>
+                <span style="font-size:12px;">5560 Explorer Dr,Mississauga, Ontario, Canada</span>
+            </div>
+        
+    # </div>
+    
+    
+            <div class="folium-map" id="map_0a6fbc2f89641027a9bf46128da0b076" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_0a6fbc2f89641027a9bf46128da0b076 = L.map(
+                "map_0a6fbc2f89641027a9bf46128da0b076",
+                {
+                    center: [43.67101343878517, -79.60669065761745],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 16,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_859c54ee4740602c9bf1d4f1e3998b03 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_859c54ee4740602c9bf1d4f1e3998b03.addTo(map_0a6fbc2f89641027a9bf46128da0b076);
+        
+    
+            var marker_522801de8c7e5e2a0c4e5e6b855b74cd = L.marker(
+                [43.68606201617349, -79.60970986932386],
+                {
+}
+            ).addTo(map_0a6fbc2f89641027a9bf46128da0b076);
+        
+    
+            var div_icon_bd0937d0270842dc55fe3deeb28d246e = L.divIcon({
+  "html": "\n                \u003cdiv style=\"\n                    width:60px;\n                    height:60px;\n                    border-radius:50%;\n                    background:#ff4c00;\n                    color:white;\n                    font-weight:bold;\n                    font-size:24px; \n                    display:flex;\n                    align-items:center;\n                    justify-content:center;\n                    border:2px solid white;\"\u003e\n                    1\n                \u003c/div\u003e\n            ",
+  "className": "empty",
+});
+        
+    
+                marker_522801de8c7e5e2a0c4e5e6b855b74cd.setIcon(div_icon_bd0937d0270842dc55fe3deeb28d246e);
+            
+    
+            var marker_c8c44242590dbdf39ccb2f0ff5cbc801 = L.marker(
+                [43.686121382893035, -79.61015688878142],
+                {
+}
+            ).addTo(map_0a6fbc2f89641027a9bf46128da0b076);
+        
+    
+            var div_icon_bbbd3212474f9362a306463736d0f8ff = L.divIcon({
+  "html": "\n                \u003cdiv style=\"\n                    width:60px;\n                    height:60px;\n                    border-radius:50%;\n                    background:#ff4c00;\n                    color:white;\n                    font-weight:bold;\n                    font-size:24px; \n                    display:flex;\n                    align-items:center;\n                    justify-content:center;\n                    border:2px solid white;\"\u003e\n                    2\n                \u003c/div\u003e\n            ",
+  "className": "empty",
+});
+        
+    
+                marker_c8c44242590dbdf39ccb2f0ff5cbc801.setIcon(div_icon_bbbd3212474f9362a306463736d0f8ff);
+            
+    
+            var marker_18f546ec45f6d68abca9005e66bb4754 = L.marker(
+                [43.6908298, -79.6240038],
+                {
+}
+            ).addTo(map_0a6fbc2f89641027a9bf46128da0b076);
+        
+    
+            var div_icon_8795e67ac794564de614fc23130f006a = L.divIcon({
+  "html": "\n                \u003cdiv style=\"\n                    width:60px;\n                    height:60px;\n                    border-radius:50%;\n                    background:#ff4c00;\n                    color:white;\n                    font-weight:bold;\n                    font-size:24px; \n                    display:flex;\n                    align-items:center;\n                    justify-content:center;\n                    border:2px solid white;\"\u003e\n                    3\n                \u003c/div\u003e\n            ",
+  "className": "empty",
+});
+        
+    
+                marker_18f546ec45f6d68abca9005e66bb4754.setIcon(div_icon_8795e67ac794564de614fc23130f006a);
+            
+    
+            var marker_bd7671093973e9764431c9a57b10e7b4 = L.marker(
+                [43.6895499, -79.5870297],
+                {
+}
+            ).addTo(map_0a6fbc2f89641027a9bf46128da0b076);
+        
+    
+            var div_icon_9f773209e3591e1e436e3c4b3e137967 = L.divIcon({
+  "html": "\n                \u003cdiv style=\"\n                    width:60px;\n                    height:60px;\n                    border-radius:50%;\n                    background:#ff4c00;\n                    color:white;\n                    font-weight:bold;\n                    font-size:24px; \n                    display:flex;\n                    align-items:center;\n                    justify-content:center;\n                    border:2px solid white;\"\u003e\n                    4\n                \u003c/div\u003e\n            ",
+  "className": "empty",
+});
+        
+    
+                marker_bd7671093973e9764431c9a57b10e7b4.setIcon(div_icon_9f773209e3591e1e436e3c4b3e137967);
+            
+    
+            var marker_5e7ebffa1f2c32727e78f99b80d2a417 = L.marker(
+                [43.6649334, -79.5941973],
+                {
+}
+            ).addTo(map_0a6fbc2f89641027a9bf46128da0b076);
+        
+    
+            var div_icon_22efc5d01ca99c4a5fda5c4a59bfdb75 = L.divIcon({
+  "html": "\n                \u003cdiv style=\"\n                    width:60px;\n                    height:60px;\n                    border-radius:50%;\n                    background:#ff4c00;\n                    color:white;\n                    font-weight:bold;\n                    font-size:24px; \n                    display:flex;\n                    align-items:center;\n                    justify-content:center;\n                    border:2px solid white;\"\u003e\n                    5\n                \u003c/div\u003e\n            ",
+  "className": "empty",
+});
+        
+    
+                marker_5e7ebffa1f2c32727e78f99b80d2a417.setIcon(div_icon_22efc5d01ca99c4a5fda5c4a59bfdb75);
+            
+    
+            var marker_fc02e26e9635994680947b953b2854c7 = L.marker(
+                [43.6418815, -79.6154355],
+                {
+}
+            ).addTo(map_0a6fbc2f89641027a9bf46128da0b076);
+        
+    
+            var div_icon_d15adc1399a02c7cda91309ad02d44c1 = L.divIcon({
+  "html": "\n                \u003cdiv style=\"\n                    width:60px;\n                    height:60px;\n                    border-radius:50%;\n                    background:#ff4c00;\n                    color:white;\n                    font-weight:bold;\n                    font-size:24px; \n                    display:flex;\n                    align-items:center;\n                    justify-content:center;\n                    border:2px solid white;\"\u003e\n                    6\n                \u003c/div\u003e\n            ",
+  "className": "empty",
+});
+        
+    
+                marker_fc02e26e9635994680947b953b2854c7.setIcon(div_icon_d15adc1399a02c7cda91309ad02d44c1);
+            
+    
+            var marker_34e03f32f70f5b8a97ca6300299d516f = L.marker(
+                [43.66093745, -79.59674986045175],
+                {
+}
+            ).addTo(map_0a6fbc2f89641027a9bf46128da0b076);
+        
+    
+            var div_icon_33c008504f13ea687a0836010507ccf1 = L.divIcon({
+  "html": "\n                \u003cdiv style=\"\n                    width:60px;\n                    height:60px;\n                    border-radius:50%;\n                    background:#ff4c00;\n                    color:white;\n                    font-weight:bold;\n                    font-size:24px; \n                    display:flex;\n                    align-items:center;\n                    justify-content:center;\n                    border:2px solid white;\"\u003e\n                    7\n                \u003c/div\u003e\n            ",
+  "className": "empty",
+});
+        
+    
+                marker_34e03f32f70f5b8a97ca6300299d516f.setIcon(div_icon_33c008504f13ea687a0836010507ccf1);
+            
+    
+            var marker_1f1aa80f3de13a0879ef1494ad6120f2 = L.marker(
+                [43.65848, -79.6128883],
+                {
+}
+            ).addTo(map_0a6fbc2f89641027a9bf46128da0b076);
+        
+    
+            var div_icon_499ef4424eb95ee0a31d60959f5688e5 = L.divIcon({
+  "html": "\n                \u003cdiv style=\"\n                    width:60px;\n                    height:60px;\n                    border-radius:50%;\n                    background:#ff4c00;\n                    color:white;\n                    font-weight:bold;\n                    font-size:24px; \n                    display:flex;\n                    align-items:center;\n                    justify-content:center;\n                    border:2px solid white;\"\u003e\n                    8\n                \u003c/div\u003e\n            ",
+  "className": "empty",
+});
+        
+    
+                marker_1f1aa80f3de13a0879ef1494ad6120f2.setIcon(div_icon_499ef4424eb95ee0a31d60959f5688e5);
+            
+    
+            var marker_3e3508bb509ce34db30b606cde4d9228 = L.marker(
+                [43.6603255, -79.6100447],
+                {
+}
+            ).addTo(map_0a6fbc2f89641027a9bf46128da0b076);
+        
+    
+            var div_icon_c1ac0c571159f51fe185d0c83d5721c1 = L.divIcon({
+  "html": "\n                \u003cdiv style=\"\n                    width:60px;\n                    height:60px;\n                    border-radius:50%;\n                    background:#ff4c00;\n                    color:white;\n                    font-weight:bold;\n                    font-size:24px; \n                    display:flex;\n                    align-items:center;\n                    justify-content:center;\n                    border:2px solid white;\"\u003e\n                    9\n                \u003c/div\u003e\n            ",
+  "className": "empty",
+});
+        
+    
+                marker_3e3508bb509ce34db30b606cde4d9228.setIcon(div_icon_c1ac0c571159f51fe185d0c83d5721c1);
+            
+    
+            map_0a6fbc2f89641027a9bf46128da0b076.fitBounds(
+                [[43.68606201617349, -79.60970986932386], [43.686121382893035, -79.61015688878142], [43.6908298, -79.6240038], [43.6895499, -79.5870297], [43.6649334, -79.5941973], [43.6418815, -79.6154355], [43.66093745, -79.59674986045175], [43.65848, -79.6128883], [43.6603255, -79.6100447]],
+                {"padding": [20, 20]}
+            );
+        
+    
+            map_0a6fbc2f89641027a9bf46128da0b076.fitBounds(
+                [[43.68606201617349, -79.60970986932386], [43.686121382893035, -79.61015688878142], [43.6908298, -79.6240038], [43.6895499, -79.5870297], [43.6649334, -79.5941973], [43.6418815, -79.6154355], [43.66093745, -79.59674986045175], [43.65848, -79.6128883], [43.6603255, -79.6100447]],
+                {"padding": [30, 30]}
+            );
+        
+</script>
+</html>

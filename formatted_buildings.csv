@@ -1,3 +1,22 @@
-,Address,Leasing District,Node/Municipality,Total Building Area,Office Area,Number of Floors,Typical Floor,Number of Parking Stalls,Building Type,Year Built,Parking Ratio (1 per),,Leasing Profile,Direct Available Area,Direct Available Rate,Total Available Area,Total Available Rate,Direct Asking Rate,Total Additional Rent,Gross Rent
-0,55 University Avenue ,Downtown Toronto,Financial Core,264183,252442,18,14453,338,Class A,1978,2500,,,22309,0.08444525196549361,42144,0.1595257832638739,,29.24,
-1,155 University Avenue ,Downtown Toronto,Financial Core,178696,175696,21,10390,,Class B,1968,,,,17190,0.09619689304741012,27584,0.1543627165689215,,27.74,
+No,Address,Leasing District,Node/Municipality,Total Building Area,Office Area,Number of Floors,Typical Floor,Number of Parking Stalls,Building Type,Year Built,Parking Ratio (1 per),,Leasing Profile,Direct Available Area,Direct Available Rate,Total Available Area,Total Available Rate,Direct Asking Rate,Total Additional Rent,Gross Rent
+1,1 University Avenue ,Downtown Toronto,Financial Core,258114,258114,19,16039,75,Class A,1985,3500,,,,,14982,0.05804412003998233,,,
+2,425 University Avenue ,Downtown Toronto,Downtown North,47961,45000,10,5250,,Class C,1959,,,,21068,0.4392735764475303,21068,0.4392735764475303,15,22,37
+3,55 University Avenue ,Downtown Toronto,Financial Core,272191,264523,18,14453,338,Class A,1978,2500,,,22309,0.08196082897671121,42144,0.1548324522118659,,29.24,
+4,155 University Avenue ,Downtown Toronto,Financial Core,187918,187918,21,11000,37,Class B,1968,5000,,,17190,0.09147606934939707,27584,0.1467874285592652,,27.74,
+5,100 University Avenue ,Downtown Toronto,Financial Core,282901,282901,12,24000,,Class A,1959,3500,,,146727,0.5186514010201448,156174,0.5520447082194831,,29.11,
+6,70 University Avenue ,Downtown Toronto,Financial Core,239753,235237,14,20243,203,Class A,1983,1200,,,6712,0.02799547868014165,47382,0.1976283925540035,,27.51,
+7,700 University Avenue ,Downtown Toronto,Downtown North,187000,187000,4,46750,,Class A,,,,,187000,1,187000,1,,22.25,
+8,400 University Avenue ,Downtown Toronto,Downtown North,387643,387643,25,16100,115,Class B,1970,3200,,,24484,0.06316120760596734,38898,0.100344904977002,34,23.03,57.03
+9,330 University Avenue ,Downtown Toronto,Downtown North,237000,237000,18,21000,,Class B,1931,,,,,,,,,25.05,
+10,505 University Avenue ,Downtown Toronto,Downtown North,205000,205000,20,10252,,Class B,1966,,,,65251,0.3182975609756097,65251,0.3182975609756097,,17.5,
+11,154 University Avenue ,Downtown Toronto,Financial Core,67250,64630,10,7400,24,Class A,1989,,,,2070,0.03078066914498141,2070,0.03078066914498141,,29.72,
+12,170 University Avenue ,Downtown Toronto,Financial Core,100000,92000,13,8350,,Class B,1960,,,,20895,0.20895,20895,0.20895,,29.9,
+13,480 University Avenue ,Downtown Toronto,Downtown North,248501,248501,18,17000,,Class A,1967,,,,66400,0.2672021440557583,71380,0.2872423048599402,36.5,,
+14,250 University Avenue ,Downtown Toronto,Financial Core,180585,180585,12,20000,,Class B,1957,,,,61406,0.3400393166652823,61406,0.3400393166652823,,27.46,
+15,525 University Avenue ,Downtown Toronto,Downtown North,202111,192771,14,14465,178,Class A,1989,,,,,,,,,,
+7,700 University Avenue ,Downtown Toronto,Downtown North,1225000,1125000,20,55668,,Class B,1975,,,,56000,0.04571428571428571,56000,0.04571428571428571,,22.25,
+16,522 University Avenue ,Downtown Toronto,Downtown North,210000,210000,14,15750,140,Class B,1970,,,,,,,,,21.32,
+17,439 University Avenue ,Downtown Toronto,Downtown North,189240,189240,23,8344,,Class B,1974,,,,58687,0.3101194250686958,58687,0.3101194250686958,,22,
+18,438 University Avenue ,Downtown Toronto,Downtown North,290803,282185,21,16757,,Class A,1992,,,,,,,,,25.46,
+19,200 University Avenue ,Downtown Toronto,Financial Core,145825,140189,14,11067,,Class B,1959,,,,,,,,,26.95,
+20,500 University Avenue ,Downtown Toronto,Downtown North,115000,115000,10,11781,,Class B,1959,,,,,,,,,,

@@ -18,8 +18,11 @@ while True:
 
 all_data1 = pd.concat(all_data, ignore_index=True, axis=0)  #take all one-row df in all_data and combine them into a single df 
 all_data1.columns = headers  # Set the header names
+unique_address_map = {addr: i+1 for i, addr in enumerate(all_data1['Address'].unique())}
+all_data1.insert(0, 'No', all_data1['Address'].map(unique_address_map))
+
 print (all_data1)
 all_data1.to_excel("search_results.xlsx")  # # Save to a new Excel file
 all_data1.to_csv("search_results.csv")  # # Save to a new Excel file
-print(f"Extracted {len(all_data1)} buildings and saved to search_results Excel/CSV.")
+print(f"{len(all_data1)} buildings, saved to search_results.xlsx and search_results.csv.")
 

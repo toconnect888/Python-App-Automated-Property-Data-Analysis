@@ -60,3 +60,38 @@ If you make changes to `main.py` and want to build a new executable:
     python -m PyInstaller --onefile --name AltusReportGenerator --add-data "chromedriver.exe;." .\main.py --clean
 
     The executable will be found in the `dist/` folder that is created after the above command is successfully run.
+
+...
+c.drawImage(
+    image,      # either filename or ImageReader object
+    x,          # left edge on PDF page
+    y,          # bottom edge on PDF page
+    width=None, # optional: width to display
+    height=None,# optional: height to display
+    preserveAspectRatio=True,  # optional: keeps image proportions
+    mask='auto'                # optional: handle transparency
+)
+...
+
+
+4️⃣ Quick conversion
+Unit	Conversion
+1 inch =72 points
+1 pt = 1/72 inch
+Pixels(Depends on DPI), Pixels = Inches × DPI
+
+Example:
+20px font, 300 DPI → 20/300 = 0.067 inch tall
+20px font, 72 DPI → 20/72 = 0.278 inch tall
+
+1️⃣ Letter size in points and inches
+Dimension	    Points	        Inches	    Pixels (at 300 DPI, inches x 300)
+Width	        612 pt	         8.5 in	    2550 px
+Height	        792 pt	         11 in	    3300 px
+
+Element	        Height (pt)	    Height (in)	        Height (px @300 DPI)
+Title	        72 pt	        1 in	                300 px
+Map	            360–528 pt	    5–7 in	                1500–2100 px
+Margin	        remaining	    ~1 in	                300 px
+
+width of the map = 612 - 50 x2 = 512 points = 7.11 in = 2133 px

@@ -22,6 +22,13 @@ from reportlab.lib.pagesizes import letter, landscape
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.lib import colors
 
+# from selenium import webdriver
+# from selenium.webdriver.chrome.service import Service
+# from selenium.webdriver.chrome.options import Options
+
+# options = Options()
+# driver = webdriver.Chrome(options=options)
+
 
 API_URL = "https://www.altusdatastudio.com/api/v1/search-result/comm_listings/data"
 
@@ -39,14 +46,19 @@ def get_dynamic_tokens():
         chromedriver_path = os.path.join(sys._MEIPASS, 'chromedriver.exe')
     else:
         chromedriver_path = './chromedriver.exe' # Use './chromedriver' for macOS/Linux
-
     service = Service(executable_path=chromedriver_path) # Use the dynamically determined path
+
     options = webdriver.ChromeOptions()
+    # options = Options()
     options.add_argument('--headless') 
     options.add_argument('--disable-gpu') 
     options.add_argument('--no-sandbox') 
-
+    options.add_argument('--disable-logging') # Disable logging
+    options.add_argument('--log-level=3')     # Only fatal errors
+    options.add_argument('--ignore-certificate-errors')  # Ignore invalid SSL
+    options.add_argument('--allow-insecure-localhost')   # For localhost testing
     driver = None 
+    
     try:
         #print("running")
         driver = webdriver.Chrome(service=service, options=options)
@@ -385,7 +397,7 @@ def create_excel_report(buildings):
     building_profile_end_index = 11 
 
     start_row = 0 # Tracks the row position in Excel for the start of the current building's entry
-    for building_index, building in enumerate(buildings.get('source_record', [])):
+    for building_index, building in enumerate(buildings.get('source_record', []), start=1):
         # Define variables with default values N/A
         building_name_to_write = 'N/A'
         address_to_write = 'N/A'

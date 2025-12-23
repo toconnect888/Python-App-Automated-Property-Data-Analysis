@@ -29,8 +29,11 @@ for building_index in range(num_buildings):
 all_data = pd.concat(all_data, ignore_index=True)
 all_data.columns = headers  # set field names as columns
 
+unique_address_map = {addr: i+1 for i, addr in enumerate(all_data['Address'].unique())}
+all_data.insert(0, 'No', all_data['Address'].map(unique_address_map))
+
 # Save to Excel and CSV
 all_data.to_excel("formatted_buildings.xlsx", index=False)
 all_data.to_csv("formatted_buildings.csv", index=False)
 
-print(f"Extracted {len(all_data)} buildings and saved to Excel/CSV.")
+print(f" {len(all_data)} buildings, saved to formatted_building.xlsx and formatted_buildings.csv")
