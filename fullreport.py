@@ -457,7 +457,7 @@ def generate_property_report(output_pdf_path,
                              properties_excel_path, 
                              spaces_excel_path,
                              property_id_col='Property_ID',
-                             png_path='map.png',
+                             png_path='highres_map.png', 
                              properties_sheet=0, 
                              summary_sheet=1,  # NEW: Sheet 2 for summary
                              spaces_sheet=0,

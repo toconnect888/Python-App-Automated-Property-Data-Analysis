@@ -10,22 +10,26 @@ import folium
 import io
 import base64
 from reportlab.lib.pagesizes import letter
-
+# excel first three coloumns must be: No, Address, City
 page_width, page_height = letter  #page_width 612 points , page_height 792 points
 bottom_margin = 60          # 60 points margin at bottom
 
 CACHE_FILE = "geocode_cache.csv"
 margin = 50           # 50 points margin to left and right of letter size
-scale= 2  # scale factor for high-res image
+
 image_width = int((page_width - 2 * margin) / 72 * 300 )       #2133 pixels, image width that fits well in pdf 
 image_height = int(page_height / 72 * 300 * 0.45)           #1485 pixels , image height that fits well in pdf 
-map_width = image_width * scale      #2133 * 2 pixels, folium  map size , larger than image size to allow for cropping 
-map_height = image_height * scale     #1485 *2  pixels , folium amap size height
+map_scale= 1.4  # scale factor for the real folium map size
+viewpoint_scale= 1  # scale factor for viewport size
 
-width_px = int(map_width)      #viewpoint width in pixels 
-height_px = int(map_height)    #viewpoint height in pixels 
+map_width = int(image_width * map_scale)      #2133 * map_scale pixels, folium  map size , larger than image size to allow for cropping 
+map_height = int(image_height * map_scale)     #1485 *map_scale  pixels , folium amap size height
 
-print(f"Map image size: {map_width} x {map_height} pixels, viewpoint size: {width_px} x {height_px} pixels")
+
+width_px = int(image_width * viewpoint_scale)      #viewpoint width in pixels 
+height_px = int(image_height * viewpoint_scale)    #viewpoint height in pixels 
+
+print(f"Acual Folium Map size: {map_width} x {map_height} pixels, viewpoint size: {width_px} x {height_px} pixels")
 def load_cache():
     cache = {}
     if os.path.exists(CACHE_FILE):
@@ -83,10 +87,25 @@ def html_to_png(html_file, output_png, width_px, height_px):
         page.goto(f"file:///{os.path.abspath(html_file)}")
         page.wait_for_timeout(3000)  # wait for tiles to load
 
-        page.evaluate("""() => {
+        page.evaluate(f"""
+        () => {{
+             // Hide legend
             const legend = document.querySelector('.custom-legend');
-            if (legend) { legend.style.display = 'none'; }
-        }""")
+            if (legend) {{
+                legend.style.display = 'none';
+            }}
+            const map = document.querySelector('div.folium-map');
+            if (map) {{
+                map.style.width = '{width_px}px';
+                map.style.height = '{height_px}px';
+            }}
+
+            // Force Leaflet to re-render after resize
+            if (window._leaflet_map) {{
+                window._leaflet_map.invalidateSize();
+            }}
+        }}
+        """)
 
         element = page.query_selector("div.folium-map")
         if element:
@@ -102,18 +121,6 @@ def html_to_png(html_file, output_png, width_px, height_px):
 
 def scale_image_to_pdf(input_png, output_png):
     img = Image.open(input_png)
-    # img_ratio = img.width / img.height
-    # pdf_ratio = pdf_width / pdf_height
-
-    # if img_ratio > pdf_ratio:
-    #     # Image is wider → width = pdf_width
-    #     new_width = pdf_width
-    #     new_height = int(pdf_width / img_ratio)
-    # else:
-    #     # Image is taller → height = pdf_height
-    #     new_height = pdf_height
-    #     new_width = int(pdf_height * img_ratio)
-
     img = img.resize((image_width, image_height), Image.LANCZOS)
     img.save(output_png)
 
@@ -143,19 +150,21 @@ def create_image(summary_df, output_png):
     avg_lat = sum(x[0] for x in locations) / len(locations)
     avg_lon = sum(x[1] for x in locations) / len(locations)
 
-    m = folium.Map(location=[avg_lat, avg_lon],tiles= "CartoDB Positron", width= map_width, height= map_height, zoom_start=16)         
+    m = folium.Map(location=[avg_lat, avg_lon],tiles= "OpenStreetMap", width= '100%', height= '100%', zoom_start=18)  
+    # map style, Esri WorldStreetMap , OpenStreetMap , CartoDB positron      
     for lat, lon, num, addr in locations:
         folium.Marker(
             [lat, lon],
+            ###1C9AD6 (blue background color for Marker alternative)
             icon=folium.DivIcon(html=f"""
                 <div style="
                     width:60px;
                     height:60px;
                     border-radius:50%;
-                    background:#ff4c00;
+                    background:#ff4c00;  
                     color:white;
                     font-weight:bold;
-                    font-size:24px; 
+                    font-size:28px; 
                     display:flex;
                     align-items:center;
                     justify-content:center;
@@ -213,13 +222,28 @@ def create_image(summary_df, output_png):
             Locations
         </div>
         {legend_items}
-    # </div>
+    </div>
     """
     m.get_root().html.add_child(folium.Element(legend_html))
     # Auto-fit map to all markers
     bounds = [[lat, lon] for lat, lon, _, _ in locations]
     m.fit_bounds(bounds, padding=(30, 30))
     html_file = "map.html"
+    m.get_root().html.add_child(folium.Element("""
+    <style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .folium-map {
+        width: 100vw !important;
+        height: 100vh !important;
+    }
+    </style>
+    """))
     m.save(html_file)
 
     temp_png = "highres_map.png"
