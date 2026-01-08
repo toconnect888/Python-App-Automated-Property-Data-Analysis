@@ -1,0 +1,5 @@
+.pdf
+.csv
+.excel
+/flyers/*.pdf
+/flyers/extracted/*.pdf
