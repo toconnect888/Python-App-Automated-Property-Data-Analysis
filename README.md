@@ -8,9 +8,9 @@ This Python application automates the login process to Altus Data Studio, allows
 1.  **Download the Program:**
     * Obtain the `AltusReportGenerator.exe` file through the Google Drive link (https://drive.google.com/file/d/1UIO7QisOhVe3YBh9YExGfnaTJ3k24syT/view?usp=sharing). Save it to a convenient location on your computer.
 
-2.  **Run the Program:**
+2.  **Run the Program:** 
     * Double-click `AltusReportGenerator.exe`. A command prompt window will open.
-
+   *
 3.  **Enter Credentials:**
     * The program will prompt you to "Enter your Altus Data Studio username:" and "Enter your Altus Data Studio password:". Type your credentials and press `Enter` after each. **There will be output in the terminal confirming that steps in the background were successfully run, these can be ignored.**
 
