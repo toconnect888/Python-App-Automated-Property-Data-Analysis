@@ -1,0 +1,20 @@
+Prepared By: DALIA ZAHEREDDINE, Administrator
+Phone: 416-649-5920
+Printed On: 10/21/2025 4:02:05 PM
+
+LENNARD COMMERCIAL REALTY, BROKERAGE
+55 University Ave 
+#200, Toronto ON M5J2H7
+
+Sales Representative 
+Broker 
+Vice President
+President
+
+PropTx Innovations Inc. (PropTx) assumes no responsibility for the accuracy of any information shown.
+Copyright 2025, used under license to PropTx 2025.
+
+\d{3}-\d{3}-\d{4}
+[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}
+[A-Z&\s\.\-/,]*REAL(?:TY| ESTATE| GROUP| INC| LTD)[A-Z&\s\.\-/,]*
+
