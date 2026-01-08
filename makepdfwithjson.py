@@ -11,6 +11,7 @@ import time
 from urllib.parse import unquote 
 from selenium.common.exceptions import TimeoutException, WebDriverException 
 import xlsxwriter
+import pandas as pd
 
 API_URL = "https://www.altusdatastudio.com/api/v1/search-result/comm_listings/data"
 
@@ -338,7 +339,7 @@ def fetch_real_estate_data(search_parameters, fetched_tokens):
 
 # Generates an Excel report named 'real_estate_report.xlsx' based on the fetched building data
 def create_excel_report(buildings):
-    workbook = xlsxwriter.Workbook('real_estate_report.xlsx')
+    workbook = xlsxwriter.Workbook('real_estateeport.xlsx')
     worksheet = workbook.add_worksheet()
 
     # Formatting for left alignment in a cell
@@ -534,7 +535,7 @@ def create_excel_report(buildings):
             # --- Writing Headers and Values with Titles and Gap ---
             current_row = start_row 
 
-            # Write "Building Profile" title
+            # Write "Building Profile" title  worksheet.write(row, column, value, format)
             worksheet.write(current_row, 0, "Building Profile", bold_format if 'bold_format' in locals() else left_align_format)
             current_row += 1 
             # Write Building Profile fields (first 12)
@@ -584,7 +585,6 @@ def create_excel_report(buildings):
             worksheet.set_column(0,0,25)
             worksheet.set_column(1,1,25)
 
-
         except Exception as e:
             print(f"Error processing building: {building_name_to_write}. Error: {e}")
             # To prevent infinite loop if an error occurs but start_row is not updated
@@ -598,6 +598,82 @@ def create_excel_report(buildings):
 
     workbook.close()
     print("Real estate report generated successfully: real_estate_report.xlsx")
+
+
+def clean(v):
+    return v if v not in (None, "") else "N/A"
+
+
+rows = []
+
+for building in buildings.get("source_record", []):
+    try:
+        # ----- BUILDING-LEVEL FIELDS -----
+        address = clean(building.get("ADDRESS"))
+
+        # Get all suites (default to empty suite if none)
+        suites = building.get("SUITES", [])
+        if not suites:
+            suites = [{}]
+
+        # Rent info comes from building or portions
+        portions = building.get("PORTIONS", [])
+        first_portion = portions[0] if portions else {}
+
+        # Rent numbers
+        net_rent_raw = first_portion.get("ASKING_RATE_MIN_PORTION")
+        additional_rent_raw = building.get(
+            "TOTAL_ADDITIONAL_RENT_PORTION",
+            first_portion.get("TOTAL_ADDITIONAL_RENT_PORTION")
+        )
+
+        # ----- LOOP THROUGH SUITES -----
+        for suite in suites:
+            space_name = clean(suite.get("SPACE_NAME"))
+            sf_available = clean(suite.get("SF_AVAILABLE"))
+            possession = clean(suite.get("POSSESSION"))
+
+            # Cleaned values
+            net_rent = clean(net_rent_raw)
+            additional_rent = clean(additional_rent_raw)
+
+            # Gross rent
+            if isinstance(net_rent_raw, (int, float)) and isinstance(additional_rent_raw, (int, float)):
+                gross_rent = net_rent_raw + additional_rent_raw
+            else:
+                gross_rent = "N/A"
+
+            # Append row
+            rows.append([
+                address,
+                space_name,
+                sf_available,
+                net_rent,
+                additional_rent,
+                gross_rent,
+                possession
+            ])
+
+    except Exception as e:
+        print(f"Error processing building: {e}")
+        continue
+
+# ----- CREATE EXCEL SHEET -----
+import pandas as pd
+
+headers = ["Address", "Space Name", "SF Available", "Net Rent", "Additional Rent", "Gross Rent", "Possession"]
+df = pd.DataFrame(rows, columns=headers)
+
+with pd.ExcelWriter("real_estate_report.xlsx", engine="openpyxl", mode="a") as writer:
+    df.to_excel(writer, sheet_name="Available Space", index=False)
+
+
+
+# # Export to Excel
+# df.to_excel("aviailble space.xlsx", index=False)       
+    
+
+
 
 # Main program execution
 if __name__ == "__main__":
