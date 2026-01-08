@@ -3,14 +3,16 @@ import re
 from pdf2image import convert_from_path
 import pytesseract
 from PIL import Image
+from PyPDF2 import PdfReader, PdfWriter
+import os
 
 #best version for debranding flyer woth OCR
-pdf_path = "flyer2.pdf"
+pdf_path = r"E:\Business\TOCOnnect\Code\Python Practice\96 Inspire Blvd - Brochure Nov 2025.pdf"
 output_path = "DebrandedFlyer.pdf"
 patterns_file = "redact_list2.txt"
 output_path1 = "searchable.pdf" # Output searchable PDF
 
-# # Convert PDF pages to images
+# Convert PDF pages to images
 # images = convert_from_path(pdf_path, dpi=300)
 # # Create a new PDF
 # new_doc = fitz.open()
@@ -75,3 +77,5 @@ doc.save(output_path)
 doc.close()
 
 print(f"\nRedacted PDF saved to: {output_path}")
+
+

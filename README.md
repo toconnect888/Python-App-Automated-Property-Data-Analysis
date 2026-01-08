@@ -3,6 +3,10 @@
 
 This Python application automates the login process to Altus Data Studio, allows you to specify search criteria, and generates an Excel report of real estate listings. Features include:
 
+Turn virtual environment
+
+python -m venv propertyai  
+.\propertyai\Scripts\Activate.ps1
 
 ## For Users (Using the Executable)
 
