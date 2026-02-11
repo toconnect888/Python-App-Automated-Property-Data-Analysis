@@ -33,15 +33,27 @@ styles = getSampleStyleSheet()
 normal = styles["Normal"]
 header_style = ParagraphStyle('header_style',parent=normal,textColor=colors.white,fontName='HelveticaNeueLTStd-Th',fontSize=10,alignment=0)
 
-def format_field_name(column_name):
+def format_field_name(column_name):  #modify column names to be good header names in the report
     name = column_name.replace('_', ' ').title()
-    replacements = {'Rba': 'Total Building Area', 'Rent/Sf/Yr': 'Net Rent', 'Total Available Space (Sf)' : 'Total Available Space'}
+
+    replacements = {
+        'Rba': 'Total Building Area', 'Rent/Sf/Yr': 'Net Rent(PSF)', 
+        'Total Available Space (Sf)' : 'Total Available Space', 
+        'Tmi' : 'Additional Rent (PSF)', 
+        'Direct Available Space': 'Direct Available Space',
+        'Direct Available Rate': 'Direct Available Rate', 
+        'Direct Asking Rate': 'Direct Asking Rate',
+        'Size (Sf)':'Size (SF)',
+        'Net Rent':'Net Rent (PSF)',
+        'Additional Rent':'Additional Rent (PSF)',
+        'Gross Rent':'Gross Rent (PSF)',
+         }
     for old, new in replacements.items():
         name = name.replace(old, new)
     return name
 
 def create_property_table_data(row, exclude_columns=None):
-    skip_cols = {'Percent Leased', 'Possession'}  # columns to skip
+    skip_cols = {'Percent Leased', 'Possession','TMI'}  # columns to skip
     if exclude_columns is None:
         exclude_columns = []
     table_data = [['', '']]
@@ -70,7 +82,7 @@ def create_property_table_data(row, exclude_columns=None):
                 except (ValueError, TypeError):
                     value = str(val)
 
-        elif col.strip().lower() in ['direct asking rate', 'total additional rate', 'gross rent', 'total additional rent']:
+        elif col.strip().lower() in ['direct asking rate', 'total additional rate', 'gross rent', 'total additional rent','tmi']:
             if pd.isna(val): value = "-"
             else:
                 try:
@@ -96,7 +108,7 @@ def create_spaces_table_data(spaces_df):
     normal.leading = 12 
 
     # skip certain columns
-    skip_cols = ['', 'Possession']  # if you don't want these columns, put column names here
+    skip_cols = ['Door','Door.1','Clear Height', 'Possession']  # if you don't want these columns, put column names here
     colomns = [col for col in spaces_df.columns if col not in skip_cols]
     spaces_df = spaces_df[colomns]
 
@@ -123,12 +135,190 @@ def create_spaces_table_data(spaces_df):
                         value = f"${number:,.2f}"
                     except (ValueError, TypeError):
                         value = str(row[col])
+            elif col.strip().lower() in ['annual rent','monthly rent']:
+                if pd.isna(row[col]): value = "-"
+                else:
+                    try:
+                        number = float(str(row[col]).replace(',', '').replace('$', ''))
+                        value = f"${number:,.0f}"
+                    except (ValueError, TypeError):
+                        value = str(row[col])
             else:
                 value = "N/A" if pd.isna(row[col]) else str(row[col])
             space_row.append(Paragraph(value, normal))
         
         table_data.append(space_row)
     return table_data
+
+def load_units(root):
+    buildings = {}
+    for building in os.listdir(root):
+        bpath = os.path.join(root, building)
+        if not os.path.isdir(bpath):
+            continue
+        units = []
+        for unit in sorted(os.listdir(bpath)):
+            upath = os.path.join(bpath, unit)
+            if not os.path.isdir(upath):
+                continue
+            # Floor plan
+            plan_dir = os.path.join(upath, "floorplan")
+            plan = None
+
+            if os.path.exists(plan_dir):
+                files = sorted(os.listdir(plan_dir))
+                if files:
+                    plan = os.path.join(plan_dir, files[0])
+            # Photos
+            photos_dir = os.path.join(upath, "photos")
+            photos = []
+            if os.path.exists(photos_dir):
+                for f in sorted(os.listdir(photos_dir)):
+                    photos.append(
+                        os.path.join(photos_dir, f)
+                    )
+            units.append({
+                "unit": unit,
+                "floor_plan": plan,
+                "photos": photos
+            })
+
+        buildings[building] = units
+    return buildings
+
+def validate_media(buildings):
+    for b, units in buildings.items():
+        for u in units:
+            if u["floor_plan"] and not os.path.exists(u["floor_plan"]):
+                print("Missing plan:", b, u["unit"])
+            for p in u["photos"]:
+                if not os.path.exists(p):
+                    print("Missing photo:", b, u["unit"], p)
+
+def build_report(buildings, filename):
+
+    doc = SimpleDocTemplate(
+        filename,
+        pagesize=LETTER,
+        rightMargin=40,
+        leftMargin=40,
+        topMargin=40,
+        bottomMargin=40
+    )
+
+    styles = getSampleStyleSheet()
+    story = []
+
+
+    for bid, units in buildings.items():
+        # Page 1 — Summary
+        story.extend(build_summary_page(bid, units))
+        story.append(PageBreak())
+
+        # Units in sequence
+        for unit in units:
+
+            # Floor plan (if exists)
+            if unit.get("floor_plan"):
+                story.extend(build_unit_floorplan(bid, unit))
+
+            # Photos (if exist)
+            if unit.get("photos"):
+                story.extend(build_unit_photos(bid, unit))
+
+        # Hard break before next building
+        story.append(PageBreak())
+    doc.build(story)
+
+def build_unit_floorplan(bid, unit):
+    elements = []
+    # Header
+    elements.append(
+        Paragraph(
+            f"Building {bid} – Unit {unit['unit']} Floor Plan",
+            styles["Heading2"]
+        )
+    )
+    elements.append(Spacer(1,15))
+    # Large image
+    img = safe_image(unit["floor_plan"], 520, 720)
+    elements.append(img)
+    elements.append(Spacer(1,10))
+
+    # Caption
+    elements.append(
+        Paragraph(
+            f"Unit {unit['unit']} (Not to scale)",
+            styles["Italic"]
+        )
+    )
+    # End page
+    elements.append(PageBreak())
+    return elements
+def build_unit_photos(bid, unit, per_page=6):
+    elements = []
+    photos = unit.get("photos", [])
+    pages = list(chunk_list(photos, per_page))
+    for i, page in enumerate(pages):
+        # Header
+        elements.append(
+            Paragraph(
+                f"Building {bid} – Unit {unit['unit']} Photos (Page {i+1})",
+                styles["Heading2"]
+            )
+        )
+        elements.append(Spacer(1,12))
+        rows = []
+        row = []
+
+        for path in page:
+
+            img = safe_image(path, 230, 180)
+
+            cell = KeepTogether([
+                img,
+                Spacer(1,4),
+                Paragraph(
+                    f"Unit {unit['unit']}",
+                    styles["Normal"]
+                )
+            ])
+
+            row.append(cell)
+
+            if len(row) == 2:
+                rows.append(row)
+                row = []
+
+        if row:
+            rows.append(row)
+
+        table = Table(
+            rows,
+            colWidths=[260,260],
+            rowHeights=210,
+            hAlign="CENTER"
+        )
+
+        elements.append(table)
+
+        # Page break except last
+        if i < len(pages) - 1:
+            elements.append(PageBreak())
+
+    return elements
+
+
+def safe_image(path, max_w, max_h):
+    if not os.path.exists(path):
+        return Paragraph("Image not available", styles["Normal"])
+    img = Image(path)
+    img._restrictSize(max_w, max_h)
+    return img
+
+def chunk_list(lst, size):
+    for i in range(0, len(lst), size):
+        yield lst[i:i+size]
 
 def draw_tables_on_canvas(c, property_data, spaces_data, page_width, page_height):
     margin = 50
@@ -169,8 +359,8 @@ def draw_tables_on_canvas(c, property_data, spaces_data, page_width, page_height
     
     property_table.wrapOn(c, page_width, page_height)
     prop_width, prop_height = property_table.wrap(0, 0)
-    property_x = page_width - margin - prop_width
-    property_y = page_height - margin - prop_height - 40
+    property_x = page_width - margin - prop_width # right align
+    property_y = page_height - margin - prop_height - 40   # below header
     property_table.drawOn(c, property_x, property_y)
 
     available_width = page_width - 2*margin
@@ -267,14 +457,13 @@ def draw_building_summary_page(c, summary_df, page_width, page_height, png_path)
     normal.fontName = "HelveticaNeueLTStd-Lt"
     normal.fontSize = 10
 
-    skip_cols = ['Door', 'Door.1', 'Possession']  
-    # skip_cols = ['']
+    skip_cols = ['Door','Door.1', 'Possession','Parking','Clear Height','Lease Type']  # columns to skip in spaces.xlsx, colomn names must be exact match with the excel header
     colomns = [col for col in summary_df.columns if col not in skip_cols]
     summary_df["No"] = summary_df["No"].ffill()
     summary_df["Address"] = summary_df["Address"].ffill()
     summary_df = summary_df[colomns]
-    header = [Paragraph(str(col),header_style) for col in summary_df.columns.tolist()]
-    
+    header = [Paragraph(str(format_field_name(col)),header_style) for col in summary_df.columns.tolist()]
+
     body_rows = []
     for _, row in summary_df.iterrows():
         body_row = []
@@ -289,7 +478,7 @@ def draw_building_summary_page(c, summary_df, page_width, page_height, png_path)
                         value = f"${number:,.2f}"
                     except (ValueError, TypeError):
                         value = str(cell)
-            elif col.strip().lower() in ['annual rent']:
+            elif col.strip().lower() in ['annual rent','monthly rent']:
                 if pd.isna(cell): value = "-"
                 else:
                     try:
@@ -332,7 +521,7 @@ def draw_building_summary_page(c, summary_df, page_width, page_height, png_path)
     if available_width <= 0:
         raise ValueError("Available width for table is too small")
     num_columns = len(table_data[0])
-    PARAGRAPH_COLS = {4, 5,6,7,8}   # fixed colomns 
+    PARAGRAPH_COLS = {3,4, 5,6,7,8}   # fixed colomns 
     FIXED_PARA_WIDTH = 60   # points
     MIN_COL_WIDTH = 30
     col_widths = []
@@ -341,7 +530,7 @@ def draw_building_summary_page(c, summary_df, page_width, page_height, png_path)
             # Fixed width for wrapped text
             col_widths.append(FIXED_PARA_WIDTH)
         elif col_idx ==0 or col_idx ==9:
-            col_widths.append(30)
+            col_widths.append(15)
         else:
             # Auto-size based on text length
             max_width = 0
@@ -416,6 +605,43 @@ def draw_building_summary_page(c, summary_df, page_width, page_height, png_path)
         map_y = (page_height - pt_h) / 2
         c.drawImage(ImageReader(png_path),margin,map_y,width=pt_w,height=pt_h)
 
+MAX_PHOTOS_PER_PAGE = 6  # 6 photos per page
+def draw_page_header(c, building, unit, page_type, page_width, page_height):
+    """Draw header at top of page"""
+    c.setFont("Helvetica-Bold", 18)
+    c.setFillColor(colors.HexColor("#333333"))
+    c.drawString(50, page_height - 50, f"{building} - {unit} ({page_type})")
+
+def add_floorplan_page(c, property_table_data, floorplan_path, page_width, page_height):
+    """Draw full-page floorplan"""
+    img = ImageReader(floorplan_path)
+    width = page_width - 100
+    height = page_height - 100
+    x = 50
+    y = 50
+    c.drawImage(img, x, y, width=width, height=height, preserveAspectRatio=True)
+    c.showPage()
+
+def add_photos_pages(c, photos, property_table_data, page_width, page_height):
+    """Draw photos 6 per page (2x3 grid)"""
+    if not photos:
+        return
+    cols = 2
+    rows = 3
+    photo_width = (page_width - 3*50)/cols
+    photo_height = (page_height - 4*50)/rows
+
+    for i in range(0, len(photos), MAX_PHOTOS_PER_PAGE):
+        chunk = photos[i:i+MAX_PHOTOS_PER_PAGE]
+        for idx, photo_path in enumerate(chunk):
+            row = idx // cols
+            col = idx % cols
+            x = 50 + col*(photo_width + 50/2)
+            y = page_height - 50 - (row+1)*photo_height - row*(50/2)
+            img = ImageReader(photo_path)
+            c.drawImage(img, x, y, width=photo_width, height=photo_height, preserveAspectRatio=True)
+        c.showPage()
+
 def draw_back_cover(c, page_width, page_height):
     
     logo_path = r"E:\Business\TOCOnnect\Code\Python Practice\Logo.png"  # your logo file
@@ -462,7 +688,8 @@ def generate_property_report(output_pdf_path,
                              summary_sheet=1,  # NEW: Sheet 2 for summary
                              spaces_sheet=0,
                              exclude_property_cols=None,
-                             page_size=letter):
+                             page_size=letter,
+                             media_path=r"E:\Business\TOCOnnect\Code\Python Practice\media"):
 
     if exclude_property_cols is None:
         exclude_property_cols = [property_id_col]
@@ -522,13 +749,69 @@ def generate_property_report(output_pdf_path,
         spaces_table_data = create_spaces_table_data(property_spaces)
         draw_tables_on_canvas(c, property_table_data, spaces_table_data, page_width, page_height)
         
-        # Page number
-        c.setFont("Helvetica", 7)
-        c.drawString(page_width - 100, 30, f"Page {current_page}")
+        # # Page number
+        # c.setFont("Helvetica", 7)
+        # c.drawString(page_width - 100, 30, f"Page {current_page}")
         
         c.showPage()
         current_page += 1
     
+    #4 Floor plan and images
+    media_path = r"E:\Business\TOCOnnect\Code\Python Practice\media"
+
+    print("\nGenerating Property Tables + Floorplans/Photos per Building...")
+
+    for building_name in sorted(os.listdir(media_path)):
+        building_path = os.path.join(media_path, building_name)
+        if not os.path.isdir(building_path):
+            continue
+
+        # Get all units in building
+        units = sorted([u for u in os.listdir(building_path) if os.path.isdir(os.path.join(building_path, u))])
+
+        # --- PROPERTY TABLE PAGES FOR THIS BUILDING ---
+        building_properties = properties_df[properties_df['Address'] == building_name]
+        for _, property_row in building_properties.iterrows():
+            print(f"Generating property table page for {building_name}")
+            property_spaces = spaces_df[spaces_df[property_id_col] == property_row[property_id_col]]
+
+            # Page header
+            c.setFont("HelveticaNeueLTStd-Th", 32)
+            c.setFillColor(colors.HexColor("#A49389")) 
+            c.drawString(50, page_height - 60, f"{property_row['Address']}")
+
+            # Tables
+            property_table_data = create_property_table_data(property_row, exclude_property_cols)
+            spaces_table_data = create_spaces_table_data(property_spaces)
+            draw_tables_on_canvas(c, property_table_data, spaces_table_data, page_width, page_height)
+            c.showPage() #“Close this page and start a new one.”
+
+            # --- FLOORPLAN + PHOTOS PAGES FOR EACH UNIT IN BUILDING ---
+            for unit_name in units:
+                unit_path = os.path.join(building_path, unit_name)
+
+                # Use property_table_data for header
+                spaces_table_data = {
+                    "Address": building_name,
+                    "Suite": unit_name
+                }
+
+                # Floorplan
+                floorplan_folder = os.path.join(unit_path, "floorplan")
+                if os.path.exists(floorplan_folder):
+                    floorplans = sorted(os.listdir(floorplan_folder))
+                    if floorplans:
+                        floorplan_path = os.path.join(floorplan_folder, floorplans[0])
+                        print(f"Adding floorplan: {floorplan_path}")
+                        add_floorplan_page(c, floorplan_path, property_table_data, page_width, page_height)
+
+                # Photos
+                photos_folder = os.path.join(unit_path, "photos")
+                photos = sorted([os.path.join(photos_folder, p) for p in os.listdir(photos_folder)]) if os.path.exists(photos_folder) else []
+                if photos:
+                    print(f"Adding {len(photos)} photos for {unit_name}")
+                    add_photos_pages(c, photos, property_table_data, page_width, page_height)
+
     # 4. BACK COVER
     print(f"Generating page {current_page}/{total_pages}: Back Cover")
     draw_back_cover(c, page_width, page_height)

@@ -19,12 +19,11 @@ margin = 50           # 50 points margin to left and right of letter size
 
 image_width = int((page_width - 2 * margin) / 72 * 300 )       #2133 pixels, image width that fits well in pdf 
 image_height = int(page_height / 72 * 300 * 0.45)           #1485 pixels , image height that fits well in pdf 
-map_scale= 1.4  # scale factor for the real folium map size
+map_scale= 1  # scale factor for the real folium map size
 viewpoint_scale= 1  # scale factor for viewport size
 
 map_width = int(image_width * map_scale)      #2133 * map_scale pixels, folium  map size , larger than image size to allow for cropping 
 map_height = int(image_height * map_scale)     #1485 *map_scale  pixels , folium amap size height
-
 
 width_px = int(image_width * viewpoint_scale)      #viewpoint width in pixels 
 height_px = int(image_height * viewpoint_scale)    #viewpoint height in pixels 
@@ -150,7 +149,7 @@ def create_image(summary_df, output_png):
     avg_lat = sum(x[0] for x in locations) / len(locations)
     avg_lon = sum(x[1] for x in locations) / len(locations)
 
-    m = folium.Map(location=[avg_lat, avg_lon],tiles= "OpenStreetMap", width= '100%', height= '100%', zoom_start=18)  
+    m = folium.Map(location=[avg_lat, avg_lon],tiles= "CartoDB positron", width= '50%', height= '50%', zoom_start=18)  
     # map style, Esri WorldStreetMap , OpenStreetMap , CartoDB positron      
     for lat, lon, num, addr in locations:
         folium.Marker(
