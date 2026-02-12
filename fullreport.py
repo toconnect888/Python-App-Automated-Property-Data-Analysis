@@ -448,7 +448,7 @@ def draw_building_summary_page(c, summary_df, page_width, page_height, png_path)
     bottom_margin = 60
     map_height = page_height * 0.45  # map takes ~45% of page
     available_height = page_height - top_margin - bottom_margin 
-
+   
     c.setFont("HelveticaNeueLTStd-Th", 32)
     c.setFillColor(colors.HexColor("#A49389"))
     c.drawString(margin, page_height - 60, "Building Summary")
@@ -456,11 +456,11 @@ def draw_building_summary_page(c, summary_df, page_width, page_height, png_path)
     normal = styles["Normal"]
     normal.fontName = "HelveticaNeueLTStd-Lt"
     normal.fontSize = 10
-
+    property_id_col= "Property Address"  # column name in spaces.xlsx that identifies the property, used to group spaces under each property, must match exactly with the excel header
     skip_cols = ['Door','Door.1', 'Possession','Parking','Clear Height','Lease Type']  # columns to skip in spaces.xlsx, colomn names must be exact match with the excel header
     colomns = [col for col in summary_df.columns if col not in skip_cols]
     summary_df["No"] = summary_df["No"].ffill()
-    summary_df["Address"] = summary_df["Address"].ffill()
+    summary_df[property_id_col] = summary_df[property_id_col].ffill()
     summary_df = summary_df[colomns]
     header = [Paragraph(str(format_field_name(col)),header_style) for col in summary_df.columns.tolist()]
 
@@ -514,7 +514,7 @@ def draw_building_summary_page(c, summary_df, page_width, page_height, png_path)
 
     summary_table = Table(table_data,repeatRows=1,hAlign='LEFT')
     no_col_idx = summary_df.columns.get_loc("No")
-    address_col_idx = summary_df.columns.get_loc("Address")
+    address_col_idx = summary_df.columns.get_loc(property_id_col) # find the index of the property address column to span it as well
     group_spans = get_group_row_spans(summary_df,group_col="No",span_cols=[no_col_idx, address_col_idx])
     
     available_width = page_width - (2 * margin)
@@ -609,30 +609,20 @@ MAX_PHOTOS_PER_PAGE = 6  # 6 photos per page
 def draw_page_header(c, building, unit, page_type, page_width, page_height):
     """Draw header at top of page"""
     c.setFont("Helvetica-Bold", 18)
-    c.setFillColor(colors.HexColor("#5B4E46""))
+    c.setFillColor(colors.HexColor("#5B4E46"))
     c.drawString(50, page_height - 50, f"{building} - {unit} ({page_type})")
 
-def add_floorplan_page(c, property_table_data, floorplan_path, page_width, page_height):
+def add_floorplan_page(c, floorplan_path,property_table_data, page_width, page_height):
     """Draw full-page floorplan"""
     img = ImageReader(floorplan_path)
     width = page_width - 100
-    height = page_height - 100
+    height = page_height - 100-50  # leave space for header
     x = 50
     y = 50
     c.drawImage(img, x, y, width=width, height=height, preserveAspectRatio=True)
-    c.showPage()
+    #c.showPage()
 
-def add_photos_pages(c, photos, property_table_data, page_width, page_height):
-    """Draw photos 6 per page (2x3 grid)"""
-    if not photos:
-        return
-    cols = 2
-    rows = 3
-    margin = 40
-    slot_width = (page_width - (cols+1)*margin)/cols
-    slot_height = (page_height - (rows+1) *margin)/rows
-
-    def crop_and_fit(img_path, slot_w, slot_h):
+def crop_and_fit(img_path, slot_w, slot_h):
         """Crop and resize image to fill the slot without distortion"""
         img = Image.open(img_path)
         img_ratio = img.width / img.height
@@ -650,6 +640,21 @@ def add_photos_pages(c, photos, property_table_data, page_width, page_height):
             img = img.crop((0, top, img.width, top + new_height))
 
         return img.resize((int(slot_w), int(slot_h)))
+
+def add_photos_pages(c, photos, property_table_data, page_width, page_height):
+    """Draw photos 6 per page (2x3 grid)"""
+    if not photos:
+        return
+    cols = 2
+    rows = 3
+    left_right_margin = 40   # space on left and right edges
+    top_margin = 40          # space from top of page to header
+    bottom_margin = 20      # space from bottom of page
+    row_margin = 15          # space between rows of photos
+    col_margin = 15          # space between columns of photos
+    header_height = 60       # space reserved for title
+    slot_width = (page_width - 2*left_right_margin - (cols - 1)*col_margin) / cols
+    slot_height = (page_height - header_height - top_margin - bottom_margin- (rows - 1)*row_margin) / rows
     
     # Loop through photos in chunks of MAX_PHOTOS_PER_PAGE    
     for i in range(0, len(photos), MAX_PHOTOS_PER_PAGE):
@@ -657,14 +662,13 @@ def add_photos_pages(c, photos, property_table_data, page_width, page_height):
         for idx, photo_path in enumerate(chunk):
             row = idx // cols   # calculate row numer
             col = idx % cols        # calculate colomn numbder
-            x = margin + col * (slot_width + margin)
-            y = page_height - margin - (row + 1) * slot_height - row * margin
-
+            x = left_right_margin + col * (slot_width + col_margin)
+            y = page_height - header_height - bottom_margin - (row + 1) * slot_height - row * row_margin 
             # Crop & resize
             img = crop_and_fit(photo_path, slot_width, slot_height) # call def crop_and_fit
             img_reader = ImageReader(img)
             c.drawImage(img_reader, x, y, width=slot_width, height=slot_height)
-            c.showPage()
+        #c.showPage()
 
 def draw_back_cover(c, page_width, page_height):
     
@@ -753,11 +757,11 @@ def generate_property_report(output_pdf_path,
     print(f"Generating page {current_page}/{total_pages}: Building Summary")
     draw_building_summary_page(c, summary_df, page_width, page_height, png_path)
     c.setFont("Helvetica", 7)
-    c.drawString(page_width - 100, 30, f"Page {current_page} of {total_pages}")
+    c.drawString(page_width - 100, 30, f"Page {current_page}")
     c.showPage()
     current_page += 1
 
-    # 3. PROPERTY PAGES
+    # 3. PROPERTY PAGES, one per property in properties_df, with spaces from spaces_df, floor plans and photos from media folder
     for page_num, (_, property_row) in enumerate(properties_df.iterrows(), 1):
         property_id = property_row[property_id_col].strip().lower()  # identify colomn of property address, property address is stored in proeprty_id
         
@@ -774,14 +778,83 @@ def generate_property_report(output_pdf_path,
         spaces_table_data = create_spaces_table_data(property_spaces)
         draw_tables_on_canvas(c, property_table_data, spaces_table_data, page_width, page_height)
         
+        #draw building photos on the same page if they exist
+        buildingphoto_path = r"E:\Business\TOCOnnect\Code\Python Practice\media\buildingphotos"
+        header_height = 100  # space reserved for header and spacing
+        photos = [
+            f for f in os.listdir(buildingphoto_path)
+            if f.lower().endswith(".jpg")]
+        print(photos)
+        # Try to find photo for this building
+        photo_file = None
+        for f in photos:
+            building_name = os.path.splitext(f)[0].strip().lower()  # remove .jpg and lowercase
+            #print(f"Comparing '{building_name}' with '{property_id}'")
+            if building_name == property_id:
+                photo_file = f
+                break  # found the matching photo
+
+        if photo_file:  
+            photo_path = os.path.join(buildingphoto_path, photo_file)
+            cols = 2
+            rows = 3
+            left_right_margin = 50
+            top_margin = 50
+            bottom_margin = 20
+            row_margin = 20
+            col_margin = 20
+            header_height = 60
+            slot_width = (page_width - 2*left_right_margin - (cols - 1)*col_margin) / cols
+            slot_height = (page_height - header_height - top_margin - bottom_margin - (rows - 1)*row_margin) / rows
+            
+            # Crop & resize (your previous function)
+            img = crop_and_fit(photo_path, slot_width, slot_height)
+            img_reader = ImageReader(img)
+
+            x = left_right_margin # left margin
+            y = page_height - header_height - top_margin - slot_height # position below header
+
+            c.drawImage(img_reader, x, y, width=slot_width, height=slot_height)
+            #img = ImageReader(photo_path)            
+            # im = Image.open(photo_path)
+            # aspect = im.width / im.height
+
+            # # Open image to get its aspect ratio
+            # im = Image.open(photo_path)
+            # aspect = im.width / im.height
+            # #img = crop_and_fit(photo_path, im.width, im.height)  # crop to fit header space if needed:
+            # # Set max width/height for the photo
+            # max_width = 250
+            # max_height = 300
+            # # img_width = min(im.width, max_width)
+            # # img_height = img_width / aspect
+            # if im.width > max_width:
+            #     img_width = max_width
+            #     img_height = max_width / aspect
+            # else:
+            #     img_width = im.width
+            #     img_height = im.height
+
+            # if img_height > max_height:
+            #     img_height = max_height
+            #     img_width = max_height * aspect
+
+            # # Position: top-left under header
+            # x = 50      # left margin
+            # y = page_height - header_height - img_height -10 # 20pt gap below header
+            # #img_reader = ImageReader(img)
+            # # Draw the image
+            # c.drawImage(photo_path, x, y, width=img_width, height=img_height)
+
         # Page number
         c.setFont("Helvetica", 7)
+        c.setFillColor(colors.HexColor("#A49389"))
         c.drawString(page_width - 100, 30, f"Page {current_page}")
         
         c.showPage() #close page and go to next
         current_page += 1
     
-    #4 Floor plan 
+        # ----Floor plan---------- 
         media_path = r"E:\Business\TOCOnnect\Code\Python Practice\media"
         property_folder = os.path.join(media_path, property_id)
 
@@ -809,9 +882,9 @@ def generate_property_report(output_pdf_path,
                 floorplan_path = os.path.join(floorplan_folder, newest_file)
                 
                 # Add title at the top
-                title_text = f"{property_row[property_id_col]} - {unit_name} - Floorplan"
-                c.setFont("Helvetica-Bold", 24)
-                c.setFillColor(colors.HexColor("#5B4E46"))
+                title_text = f"{property_row[property_id_col]} - Unit {unit_name} - Floorplan"
+                c.setFont("HelveticaNeueLTStd-Th", 28)
+                c.setFillColor(colors.HexColor("#A49389"))
                 c.drawString(50, page_height - 50, title_text)
                 
                 add_floorplan_page(
@@ -821,7 +894,12 @@ def generate_property_report(output_pdf_path,
                     page_width,
                     page_height
                 )
-
+                c.setFont("Helvetica", 7)
+                c.setFillColor(colors.HexColor("#A49389"))
+                c.drawString(page_width - 100, 30, f"Page {current_page}")
+                c.showPage() #close page and go to next
+                current_page += 1
+    
             # -------- PHOTOS --------
             photos_folder = os.path.join(unit_path, "photos")
             if os.path.exists(photos_folder):
@@ -834,9 +912,9 @@ def generate_property_report(output_pdf_path,
                     print(f"Adding {len(photos)} photos for {unit_name}")
 
                     # Add title at the top
-                    title_text = f"{property_row[property_id_col]} - {unit_name} - Photos"
-                    c.setFont("Helvetica-Bold", 24)
-                    c.setFillColor(colors.HexColor("#5B4E46"))
+                    title_text = f"{property_row[property_id_col]} - Unit {unit_name} - Photos"
+                    c.setFont("HelveticaNeueLTStd-Th", 28)
+                    c.setFillColor(colors.HexColor("#A49389"))
                     c.drawString(50, page_height - 50, title_text)
                     
                     add_photos_pages(
@@ -844,52 +922,13 @@ def generate_property_report(output_pdf_path,
                         photos,
                         property_table_data,
                         page_width,
-                        page_height
-                    )
-
-        # # # # --- PROPERTY TABLE PAGES FOR THIS BUILDING ---
-        # # # building_properties = properties_df[properties_df['Address'] == building_name]
-        # # # for _, property_row in building_properties.iterrows():
-        # # #     print(f"Generating property table page for {building_name}")
-        # # #     property_spaces = spaces_df[spaces_df[property_id_col] == property_row[property_id_col]]
-
-        # #     # Page header
-        # #     c.setFont("HelveticaNeueLTStd-Th", 32)
-        # #     c.setFillColor(colors.HexColor("#A49389")) 
-        # #     c.drawString(50, page_height - 60, f"{property_row['Address']}")
-
-        # #     # Tables
-        # #     property_table_data = create_property_table_data(property_row, exclude_property_cols)
-        # #     spaces_table_data = create_spaces_table_data(property_spaces)
-        # #     draw_tables_on_canvas(c, property_table_data, spaces_table_data, page_width, page_height)
-        # #     c.showPage() #“Close this page and start a new one.”
-
-        #     # --- FLOORPLAN + PHOTOS PAGES FOR EACH UNIT IN BUILDING ---
-        #     for unit_name in units:
-        #         unit_path = os.path.join(building_path, unit_name)
-
-        #         # Use property_table_data for header
-        #         spaces_table_data = {
-        #             "Address": building_name,
-        #             "Suite": unit_name
-        #         }
-
-        #         # Floorplan
-        #         floorplan_folder = os.path.join(unit_path, "floorplan")
-        #         if os.path.exists(floorplan_folder):
-        #             floorplans = sorted(os.listdir(floorplan_folder))
-        #             if floorplans:
-        #                 floorplan_path = os.path.join(floorplan_folder, floorplans[0])
-        #                 print(f"Adding floorplan: {floorplan_path}")
-        #                 add_floorplan_page(c, floorplan_path, property_table_data, page_width, page_height)
-
-        #         # Photos
-        #         photos_folder = os.path.join(unit_path, "photos")
-        #         photos = sorted([os.path.join(photos_folder, p) for p in os.listdir(photos_folder)]) if os.path.exists(photos_folder) else []
-        #         if photos:
-        #             print(f"Adding {len(photos)} photos for {unit_name}")
-        #             add_photos_pages(c, photos, property_table_data, page_width, page_height)
-
+                        page_height )
+                    c.setFont("Helvetica", 7)
+                    c.setFillColor(colors.HexColor("#A49389"))
+                    c.drawString(page_width - 100, 30, f"Page {current_page}")
+                    c.showPage() #close page and go to next
+                    current_page += 1
+    
     # 4. BACK COVER
     print(f"Generating page {current_page}/{total_pages}: Back Cover")
     draw_back_cover(c, page_width, page_height)
